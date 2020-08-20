@@ -27,4 +27,8 @@ body {
   height: 100%;
   width: 100%;
 }
+
+.el-menu-item {
+  text-align: center;
+}
 </style>

@@ -51,3 +51,18 @@ export interface Passwords {
 export interface UploadFile {
   raw: File
 }
+
+export interface StudentInfo {
+  id: number|null;
+  signUpTime: string;
+  consultant: string;
+  consultingAssistant: string;
+  enterTime: string;
+  enterClass: string;
+  hasUpdate: string;
+  studentName: string;
+  phoneNum: string;
+  idCard: string;
+  lessonName: string;
+  search_id?: number|null;
+}

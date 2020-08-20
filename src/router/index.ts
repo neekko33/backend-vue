@@ -1,11 +1,11 @@
-import Vue from 'vue'
-import VueRouter, { RouteConfig } from 'vue-router'
-import Login from '../views/Login.vue'
-import Home from '../views/Home.vue'
-import Nprogress from 'nprogress'
-import '../../node_modules/nprogress/nprogress.css'
+import Vue from 'vue';
+import VueRouter, { RouteConfig } from 'vue-router';
+import Login from '../views/Login.vue';
+import Home from '../views/Home.vue';
+import Nprogress from 'nprogress';
+import '../../node_modules/nprogress/nprogress.css';
 
-Vue.use(VueRouter)
+Vue.use(VueRouter);
 
 const routes: Array<RouteConfig> = [
   {
@@ -22,13 +22,15 @@ const routes: Array<RouteConfig> = [
         path: 'dashboard',
         name: 'dashboard',
         meta: { title: '后台管理' },
-        component: () => import(/* webpackChunkName:"dashboard" */ '../pages/Index.vue'),
+        component: () =>
+          import(/* webpackChunkName:"dashboard" */ '../pages/Index.vue'),
       },
       {
         path: 'type',
         name: 'type',
         meta: { title: '类型管理' },
-        component: () => import(/* webpackChunkName:"type" */ '../pages/Type.vue'),
+        component: () =>
+          import(/* webpackChunkName:"type" */ '../pages/Type.vue'),
       },
       // {
       // 	path: 'message',
@@ -42,25 +44,35 @@ const routes: Array<RouteConfig> = [
         name: 'article',
         meta: { title: '文章管理' },
         redirect: '/article/list',
-        component: () => import(/* webpackChunkName:"article" */ '../pages/Article.vue'),
+        component: () =>
+          import(/* webpackChunkName:"article" */ '../pages/Article.vue'),
         children: [
           {
             path: 'list',
             name: 'list',
             meta: { title: '文章列表' },
-            component: () => import(/* webpackChunkName:"article" */ '../pages/ArticleList.vue'),
+            component: () =>
+              import(
+                /* webpackChunkName:"article" */ '../pages/ArticleList.vue'
+              ),
           },
           {
             path: 'add',
             name: 'add',
             meta: { title: '新增文章' },
-            component: () => import(/* webpackChunkName:"article" */ '../pages/EditArticle.vue'),
+            component: () =>
+              import(
+                /* webpackChunkName:"article" */ '../pages/EditArticle.vue'
+              ),
           },
           {
             path: 'update/:id',
             name: 'update',
             meta: { title: '编辑文章' },
-            component: () => import(/* webpackChunkName:"article" */ '../pages/EditArticle.vue'),
+            component: () =>
+              import(
+                /* webpackChunkName:"article" */ '../pages/EditArticle.vue'
+              ),
           },
         ],
       },
@@ -69,60 +81,89 @@ const routes: Array<RouteConfig> = [
         name: 'user',
         meta: { title: '用户管理' },
         redirect: '/user/list',
-        component: () => import(/* webpackChunkName:"user" */ '../pages/User.vue'),
-        children:[
+        component: () =>
+          import(/* webpackChunkName:"user" */ '../pages/User.vue'),
+        children: [
           {
             path: 'list',
             name: 'list',
-            meta: {title: '新增用户'},
-            component: ()=> import(/* webpackChunkName:"user" */ '../components/UserList.vue')
+            meta: { title: '新增用户' },
+            component: () =>
+              import(
+                /* webpackChunkName:"user" */ '../components/UserList.vue'
+              ),
           },
           {
             path: 'create',
             name: 'create',
-            meta: {title: '新增用户'},
-            component: ()=> import(/* webpackChunkName:"user" */ '../components/Info.vue')
-          }
-        ]
+            meta: { title: '新增用户' },
+            component: () =>
+              import(/* webpackChunkName:"user" */ '../components/Info.vue'),
+          },
+        ],
+      },
+      {
+        path: 'finance',
+        name: 'finance',
+        meta: { title: '财务管理' },
+        redirect: '/finance/query',
+        component: () =>
+          import(/* webpackChunkName:"setting" */ '../pages/Finance.vue'),
+        children: [
+          {
+            path: 'query',
+            name: 'query',
+            meta: { title: '信息查询' },
+            component: () =>
+              import(
+                /* webpackChunkName:"setting" */ '../pages/Query.vue'
+              ),
+          },
+        ],
       },
       {
         path: 'setting',
         name: 'setting',
         meta: { title: '个人设置' },
         redirect: '/setting/info',
-        component: () => import(/* webpackChunkName:"setting" */ '../pages/Setting.vue'),
+        component: () =>
+          import(/* webpackChunkName:"setting" */ '../pages/Setting.vue'),
         children: [
           {
             path: 'info',
             name: 'info',
             meta: { title: '个人信息' },
-            component: () => import(/* webpackChunkName:"setting" */ '../components/Info.vue'),
+            component: () =>
+              import(/* webpackChunkName:"setting" */ '../components/Info.vue'),
           },
           {
             path: 'password',
             name: 'password',
             meta: { title: '修改密码' },
-            component: () => import(/* webpackChunkName:"setting" */ '../components/Password.vue'),
+            component: () =>
+              import(
+                /* webpackChunkName:"setting" */ '../components/Password.vue'
+              ),
           },
         ],
       },
     ],
   },
-]
+];
 
 const router = new VueRouter({
   mode: 'history',
   // base: process.env.BASE_URL,
   routes,
-})
+});
 
 router.beforeEach((to, from, next) => {
-  Nprogress.start()
-  next()
-})
+  Nprogress.start();
+  next();
+});
 
 router.afterEach((to, from) => {
-  Nprogress.done()
-})
+  Nprogress.done();
+});
 
-export default router
+export default router;

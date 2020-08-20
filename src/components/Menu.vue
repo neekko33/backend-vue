@@ -3,9 +3,14 @@
     <div class="menu_head" v-show="!isCollapse">
       MWWOW
     </div>
+    <div class="menu_head" v-show="isCollapse">
+      M
+    </div>
     <el-menu
       :default-active="
-        $route.path.startsWith('/setting') ? $route.path.split('/')[2] : $route.path.split('/')[1]
+        $route.path.startsWith('/setting')
+          ? $route.path.split('/')[2]
+          : $route.path.split('/')[1]
       "
       class="el-menu-vertical-demo"
       :collapse="isCollapse"
@@ -40,6 +45,17 @@
           <span slot="title">用户管理</span>
         </el-menu-item>
       </router-link>
+      <el-submenu index="fiannce" :disabled="!isAdmin">
+        <template slot="title">
+          <i class="el-icon-coin"></i>
+          <span slot="title">财务管理</span>
+        </template>
+        <router-link :to="{ name: 'query' }">
+          <el-menu-item index="query">
+            <span slot="title">信息查询</span>
+          </el-menu-item>
+        </router-link>
+      </el-submenu>
       <el-submenu index="setting">
         <template slot="title">
           <i class="el-icon-setting"></i>
@@ -80,11 +96,20 @@
 </style>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue } from "vue-property-decorator";
 @Component
 export default class Menu extends Vue {
+  private isAdmin = false;
   public get isCollapse(): boolean {
-    return this.$store.state.menu.isCollapse
+    return this.$store.state.menu.isCollapse;
+  }
+  public created() {
+    const user = window.localStorage.getItem("USER_INFO");
+    if (user) {
+      this.isAdmin =
+        parseInt(JSON.parse(user).id) === 1 ||
+        parseInt(JSON.parse(user).id) === 9;
+    }
   }
 }
 </script>

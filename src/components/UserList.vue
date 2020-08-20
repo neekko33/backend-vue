@@ -5,6 +5,7 @@
       size="large"
       style="position: absolute;top: 10px;right: 10px;"
       @click="createUser"
+      :disabled="!isAdmin"
       >新增用户</el-button
     >
     <el-table :data="userList" border size="large" style="margin-bottom: 5%">
@@ -36,7 +37,12 @@
       ></el-table-column>
       <el-table-column label="操作" align="center">
         <template slot-scope="{ row }">
-          <el-button type="danger" @click="deleteUser(row.id)">删除</el-button>
+          <el-button
+            type="danger"
+            @click="deleteUser(row.id)"
+            :disabled="!isAdmin"
+            >删除</el-button
+          >
         </template>
       </el-table-column>
     </el-table>
@@ -52,7 +58,13 @@ import { UserData } from "../interface";
 @Component
 export default class List extends Vue {
   private userList: UserData[] = [];
+  private isAdmin = false;
+
   public created() {
+    const user = window.localStorage.getItem("USER_INFO");
+    if (user) {
+      this.isAdmin = parseInt(JSON.parse(user).id) === 1;
+    }
     this.getUser();
   }
   public async getUser() {
