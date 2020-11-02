@@ -64,5 +64,17 @@ export interface StudentInfo {
   phoneNum: string;
   idCard: string;
   lessonName: string;
-  search_id?: number|null;
+  specialComment: string;
+  majorCost: string;
+  beforeCost: string;
+  discount: string;
+  cost: string;
+  payment: string;
+  arrears: string;
+  receiptNum: string;
+  addCost: string;
+  addPayment: string;
+  addReceiptNum: string;
+  addTime: string;
+  addTeacher: string;
 }

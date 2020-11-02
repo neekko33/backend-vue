@@ -4,17 +4,21 @@
     :data="tableData"
     border
     stripe
-    style="width: 100%;text-align:center;"
+    style="width: 100%;text-align:center;overflow: -moz-scrollbars-none; "
     :max-height="height"
   >
     <el-table-column
       type="index"
       label="序号"
       width="50"
-      fixed
       align="center"
     ></el-table-column>
-    <el-table-column prop="signUpTime" label="报名日期" align="center">
+    <el-table-column
+      prop="signUpTime"
+      label="报名日期"
+      align="center"
+      width="120"
+    >
     </el-table-column>
     <el-table-column prop="consultant" label="咨询师" align="center">
     </el-table-column>
@@ -44,7 +48,32 @@
       width="150"
     >
     </el-table-column>
-    <el-table-column label="操作" align="center">
+    <el-table-column prop="specialComment" label="特殊备注" align="center">
+    </el-table-column>
+    <el-table-column prop="majorCost" label="专业学费" align="center">
+    </el-table-column>
+    <el-table-column prop="beforeCost" label="以前学费" align="center">
+    </el-table-column>
+    <el-table-column prop="discount" label="优惠金额" align="center">
+    </el-table-column>
+    <el-table-column prop="cost" label="缴费" align="center"></el-table-column>
+    <el-table-column prop="payment" label="支付方式" align="center">
+    </el-table-column>
+    <el-table-column prop="arrears" label="欠费" align="center">
+    </el-table-column>
+    <el-table-column prop="receiptNum" label="收据号码" align="center">
+    </el-table-column>
+    <el-table-column prop="addCost" label="补费" align="center">
+    </el-table-column>
+    <el-table-column prop="addPayment" label="支付方式" align="center">
+    </el-table-column>
+    <el-table-column prop="addReceiptNum" label="收据号码" align="center">
+    </el-table-column>
+    <el-table-column prop="addTime" label="补费日期" align="center">
+    </el-table-column>
+    <el-table-column prop="addTeacher" label="补费老师" align="center">
+    </el-table-column>
+    <el-table-column label="操作" align="center" fixed="right" width="100">
       <template slot-scope="{ row }">
         <el-tooltip
           class="item"
@@ -128,8 +157,6 @@ export default class Table extends Vue {
         JSON.stringify(this.tableData.find(item => item.id === id))
       ) as StudentInfo;
       // eslint-disable-next-line @typescript-eslint/camelcase
-      stuInfo.search_id = stuInfo.id;
-      stuInfo.id = null;
       const {
         data: { code }
       } = await addTemporary(stuInfo);
@@ -151,4 +178,12 @@ export default class Table extends Vue {
 }
 </script>
 
-<style></style>
+<style>
+.el-table__body-wrapper::-webkit-scrollbar {
+  width: 0 !important;
+}
+
+.el-table__fixed-right {
+  bottom: 0;
+}
+</style>

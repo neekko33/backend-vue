@@ -52,29 +52,14 @@
           style="margin-left:1vw"
           >搜索</el-button
         >
+      </div>
+      <div class="container-item" style="text-align:right">
         <el-button type="warning" @click="dialogVisible = true"
           >更新数据</el-button
         >
       </div>
-      <div class="container-item" style="text-align:right">
-        <el-radio-group v-model="radio">
-          <el-radio-button label="手机查询"></el-radio-button>
-          <el-radio-button label="日期查询"></el-radio-button>
-        </el-radio-group>
-      </div>
     </div>
-    <el-tabs
-      v-model="index"
-      style="margin:0 30px;height:60vh;"
-      :before-leave="handleTabChange"
-    >
-      <el-tab-pane label="查询历史" name="history">
-        <Table :tableData="historyData" />
-      </el-tab-pane>
-      <el-tab-pane label="查询结果" name="result" v-if="queryData.length > 0">
-        <Table :tableData="queryData" />
-      </el-tab-pane>
-    </el-tabs>
+    <Table :tableData="queryData" style="margin:30px 30px;height:60vh;" />
   </div>
 </template>
 
@@ -82,15 +67,7 @@
 import { Component, Vue } from "vue-property-decorator";
 import { StudentInfo } from "@/interface";
 import Table from "@/components/Table.vue";
-import {
-  getHistory,
-  getStudentByNum,
-  updateHistory,
-  clearHistory,
-  uploadFile,
-  readFile,
-  getStudentInfo
-} from "@/api/finance";
+import { getStudentByNum, uploadFile } from "@/api/finance";
 @Component({
   components: { Table }
 })
@@ -102,21 +79,12 @@ export default class Query extends Vue {
   private password = "";
   private isShow = false;
   private loading = false;
-  private index = "history";
+  private index = "result";
   private query = "";
   private queryData: StudentInfo[] = [];
-  private historyData: StudentInfo[] = [];
   private file: File = new File([], "basedFile");
   private endNum = "";
 
-  public created() {
-    this.getHistoryData();
-  }
-  public handleTabChange(activeName: string) {
-    if (activeName === "history") {
-      this.getHistoryData();
-    }
-  }
   public async handleConfirm() {
     if (!this.file) {
       this.$notify({
@@ -144,32 +112,9 @@ export default class Query extends Vue {
     const formData = new FormData();
     formData.append("file", this.file);
     const {
-      data: {
-        code,
-        data: { filename }
-      }
-    } = await uploadFile(formData);
+      data: { code }
+    } = await uploadFile(formData, this.endNum);
     if (code !== 0) {
-      this.$notify({
-        title: "错误",
-        message: "服务器错误！",
-        type: "error"
-      });
-      return;
-    }
-    // 清除历史记录
-    const result = await clearHistory();
-    if (result.data.code !== 0) {
-      this.$notify({
-        title: "错误",
-        message: "服务器错误！",
-        type: "error"
-      });
-      return;
-    }
-    // 开始读取文件
-    const res = await readFile(this.endNum, { filename });
-    if (res.data.code !== 0) {
       this.$notify({
         title: "错误",
         message: "服务器错误！",
@@ -186,7 +131,6 @@ export default class Query extends Vue {
     this.queryData = [];
     this.query = "";
     this.handleCancel();
-    this.getHistoryData();
   }
   public handleCancel() {
     this.dialogVisible = false;
@@ -197,103 +141,32 @@ export default class Query extends Vue {
   public handleUpload(file: any) {
     this.file = file.raw;
   }
-  public async getHistoryData() {
+
+  public async search() {
+    if (!this.query.trim()) {
+      this.$notify({
+        title: "警告",
+        message: "搜索内容不能为空",
+        type: "warning"
+      });
+      return;
+    }
+    this.loading = true;
     const {
       data: { data, code }
-    } = await getHistory();
-    if (code === 0) {
-      this.historyData = data;
-    } else {
+    } = await getStudentByNum(this.query);
+    this.index = "result";
+    this.loading = false;
+    if (code !== 0) {
       this.$notify({
         title: "错误",
         message: "服务器错误！",
         type: "error"
       });
+      return;
     }
-  }
-  public async search() {
-    if (this.radio === "手机查询") {
-      if (!this.query.trim()) {
-        this.$notify({
-          title: "警告",
-          message: "搜索内容不能为空",
-          type: "warning"
-        });
-        return;
-      }
-      this.loading = true;
-      const {
-        data: { data, code }
-      } = await getStudentByNum(this.query);
-      this.index = "result";
-      this.loading = false;
-      if (code !== 0) {
-        this.$notify({
-          title: "错误",
-          message: "服务器错误！",
-          type: "error"
-        });
-        return;
-      }
-      this.queryData = data;
-      const historyList: StudentInfo[] = [];
-      this.queryData.map(item => {
-        const newItem: StudentInfo = JSON.parse(JSON.stringify(item));
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        newItem.search_id = newItem.id;
-        newItem.id = null;
-        historyList.push(newItem);
-      });
-      const res = await updateHistory(historyList);
-      if (res.data.code !== 0) {
-        this.$notify({
-          title: "错误",
-          message: "服务器错误！",
-          type: "error"
-        });
-        return;
-      }
-      this.query = "";
-    } else {
-      this.loading = true;
-      const startTime = this.selectedTime[0].getTime();
-      const endTime = this.selectedTime[1].getTime();
-      const result = await getStudentInfo();
-      if (result.data.code !== 0) {
-        this.$notify({
-          title: "错误",
-          message: "服务器错误！",
-          type: "error"
-        });
-        return;
-      }
-      let stuInfo: StudentInfo[] = result.data.data;
-      stuInfo = stuInfo.filter(item => {
-        const time = new Date(item.signUpTime).getTime();
-        if (time >= startTime && time <= endTime) {
-          return time;
-        }
-      });
-      this.queryData = stuInfo;
-      this.index = "result";
-      this.loading = false;
-      // const historyList = [];
-      // this.queryData.map((item) => {
-      //   const newItem = _.cloneDeep(item);
-      //   newItem.search_id = newItem.id;
-      //   newItem.id = null;
-      //   historyList.push(newItem);
-      // });
-      // let res = await updateHistory(historyList);
-      // if (res.data.code !== 0) {
-      //   this.$notify({
-      //     title: '错误',
-      //     message: '服务器错误！',
-      //     type: 'error',
-      //   });
-      //   return;
-      // }
-    }
+    this.queryData = data;
+    this.query = "";
   }
 }
 </script>
